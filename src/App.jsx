@@ -1,34 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useRef, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isOpen, setIsOpen] = useState(false);
+  const modalRef = useRef(null);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+  
+  const handleClose = () => {
+    setIsOpen(false);
+    document.removeEventListener('mousedown', handleClickOutside);
+  }
+
+  const handleClickOutside = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      handleClose();
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <button onClick={handleOpen}>Open Modal Window</button>
+      <div className={`overlay ${!isOpen ? 'animated' : ''}`}>
+        <div className="modal" ref={modalRef}>
+          <span className="icon" onClick={handleClose}>
+            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clipPath="url(#clip0_429_11083)">
+                <path d="M7 7.00006L17 17.0001M7 17.0001L17 7.00006" stroke="#242424" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </g>
+              <defs>
+              <clipPath id="clip0_429_11083">
+                <rect width="24" height="24" fill="white"/>
+              </clipPath>
+              </defs>
+            </svg>
+          </span>
+          <h2>Modal Content</h2>
+          <p>Example text inside the modal.</p>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
